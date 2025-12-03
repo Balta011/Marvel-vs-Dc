@@ -1,0 +1,1217 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Marvel vs DC: Choque de Energías</title>
+  <meta name="description" content="Un scrollytelling interactivo épico que enfrenta a Marvel y DC en una batalla de datos narrativos" />
+  <!-- Tipografías Google -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      background: #0f1419;
+      color: #fff;
+      font-family: Inter, Arial, sans-serif;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    /* Reemplazar regla .intro para usar la imagen y posicionar las etiquetas */
+    .intro {
+      min-height: 80vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 4rem 2rem;
+      position: relative;
+      color: #fff;
+      background-image: url('assets/intro-bg.jpg'); /* guarda la imagen aquí */
+      background-size: cover;
+      background-position: center center;
+      background-repeat: no-repeat;
+      overflow: hidden;
+    }
+
+    /* overlay para legibilidad */
+    .intro::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.45) 60%);
+      pointer-events: none;
+    }
+
+    .intro-content {
+      position: relative;
+      z-index: 3;
+      max-width: 48rem;
+      text-align: center;
+    }
+
+    /* Contenedor de etiquetas (Marvel / VS / DC) */
+    .intro-labels {
+      /* Oculto: las pequeñas etiquetas MARVEL / VS / DC no se muestran al inicio */
+      display: none !important;
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 8%;
+      z-index: 4;
+      pointer-events: none;
+      height: 0;
+    }
+
+    .intro-label {
+      position: absolute;
+      color: #fff;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      font-size: 1.6rem;
+      padding: 0.25rem 0.6rem;
+      background: rgba(0,0,0,0.35);
+      border-radius: 6px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.6);
+      transform: translateY(0);
+    }
+
+    /* Ajusta las posiciones según la composición de la imagen */
+    .intro-label.marvel {
+      left: 12%;           /* bajo Ironman (ajustar si hace falta) */
+      transform: translateX(-0%);
+      background: linear-gradient(90deg,#DC143C,#FF6B6B);
+    }
+
+    .intro-label.vs {
+      left: 50%;
+      transform: translateX(-50%);
+      bottom: 1.2rem;
+      font-size: 1.8rem;
+      background: rgba(255,255,255,0.06);
+      letter-spacing: 0.22em;
+    }
+
+    .intro-label.dc {
+      right: 12%;          /* bajo Batman (ajustar si hace falta) */
+      transform: translateX(0%);
+      background: linear-gradient(90deg,#0052CC,#66B3FF);
+    }
+
+    /* Responsive: ajustar posiciones en pantallas pequeñas */
+    @media (max-width: 900px) {
+      .intro-label.marvel { left: 8%; font-size: 1.2rem; }
+      .intro-label.vs { font-size: 1.2rem; bottom: 0.8rem; }
+      .intro-label.dc { right: 8%; font-size: 1.2rem; }
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #0f1419;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #dc143c;
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #ff6b6b;
+    }
+
+    /* Header */
+    /* Hero inicial: ocupa toda la pantalla */
+    #header.hero-header {
+      position: fixed !important;
+      height: 5rem !important;
+      top: 0 !important;
+      left: 0 !important;
+      right: 0 !important;
+      overflow: hidden !important;
+    }
+
+    /* Ajustes para que header y battle-line aparezcan abajo en la intro y suban al scrollear */
+    :root {
+      --header-h: 4rem;
+    }
+
+    /* Header fijo pero controlamos top por JS */
+    #header {
+      position: fixed;
+      left: 0;
+      right: 0;
+      height: var(--header-h);
+      z-index: 40;
+      background: #0f1419;
+      transition: top 0s cubic-bezier(0.2,0,0.2,1), transform 0.35s ease;
+      will-change: top, transform;
+      top: 0; /* valor inicial será sobreescrito por JS para colocarlo abajo */
+    }
+
+    /* Battle-line fija y su top será controlado por JS */
+    #battle-line {
+      position: fixed;
+      left: 0;
+      right: 0;
+      z-index: 39;
+      transition: top 0s cubic-bezier(0.2,0,0.2,1), transform 0.35s ease;
+      will-change: top, transform;
+      top: calc(var(--header-h)); /* valor por defecto, JS lo actualizará durante la intro */
+    }
+
+    /* Header background uses layered bg-layers to allow smooth crossfades */
+    .header-bg {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+    }
+
+    .header-bg .bg-layer {
+      position: absolute;
+      inset: 0;
+      background-size: cover;
+      background-position: center center;
+      background-repeat: no-repeat;
+      opacity: 0;
+      transition: opacity 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+      will-change: opacity;
+    }
+    /* The visible layer will have opacity: 1 */
+
+    .header-content {
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 2rem;
+      color: #fff;
+    }
+
+    .side {
+      position: absolute;
+      width: 30%; /* reduce los laterales para dejar espacio al centro */
+      display: flex;
+      justify-content: center;
+    }
+
+    .side.left {
+      left: 0;
+    }
+
+    .side.right {
+      right: 0;
+    }
+
+    .vs {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 35;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+    }
+
+    .vs .title {
+      font-size: 2.4rem;
+      font-weight: 900;
+      letter-spacing: 0.18em;
+      padding: 0.15rem 0.6rem;
+      background: rgba(255,255,255,0.04);
+      border-radius: 6px;
+      color: #fff;
+      line-height: 1;
+      text-transform: uppercase;
+      box-shadow: 0 0 12px rgba(255,255,255,0.06);
+    }
+
+    /* Opcional: mantener VS visible cuando el header está en estado final */
+    #header.final-header .vs {
+      opacity: 1 !important;
+      transform: translate(-50%, -50%) !important;
+      pointer-events: none !important;
+    }
+
+    /* BattleLine */
+  #battle-line {
+    position: fixed;
+    top: 5rem;
+    left: 0;
+    right: 0;
+    z-index: 40;
+    overflow: hidden;
+  }
+
+  /* 🔥 Oculta absolutamente todo lo que está dentro */
+  #battle-line *,
+  #barMarvel,
+  #barDc,
+  #centerLine,
+  #centerEnergy {
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+    background: none !important;
+    box-shadow: none !important;
+    filter: none !important;
+  }
+
+
+
+    #barMarvel {
+      flex-shrink: 0;
+      background: #DC143C;
+      width: 50%;
+      transition: width cubic-bezier(0.785, 0.135, 0.15, 0.86) cubic-bezier(0.4,0,0.2,1);
+      box-shadow: inset 0 0 20px rgba(220,20,60,0.6), 0 0 30px rgba(220,20,60,0.8);
+    }
+
+    #barDc {
+      flex: 1;
+      background: #0052CC;
+      width: 50%;
+      transition: width 1s cubic-bezier(0.4,0,0.2,1);
+      box-shadow: inset 0 0 20px rgba(0,82,204,0.6), 0 0 30px rgba(0,82,204,0.8);
+    }
+/*
+    #centerLine {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 4px;
+      background: #fff;
+      left: 50%;
+      transform: translateX(-50%);
+      transition: left 1 cubic-bezier(0.4,0,0.2,1);
+      box-shadow: 0 0 20px rgba(255,255,255,0.9);
+    }
+*/
+    /* Round Sections */
+    section.round {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 5rem 1.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+    #cuatro{
+      flex-direction: column;
+    }
+    section.round.marvel {
+      background: linear-gradient(135deg, rgba(220,20,60,0.05) 0%, rgba(0,0,0,0.8) 100%);
+    }
+
+    section.round.dc {
+      background: linear-gradient(135deg, rgba(0,82,204,0.05) 0%, rgba(0,0,0,0.8) 100%);
+    }
+
+    .round-glow {
+      position: absolute;
+      inset: 0;
+      opacity: 0.2;
+      animation: pulse 4s ease-in-out infinite;
+    }
+
+    .round-glow.marvel {
+      background: radial-gradient(ellipse at 20% 50%, #DC143C 0%, transparent 50%);
+    }
+
+    .round-glow.dc {
+      background: radial-gradient(ellipse at 80% 50%, #0052CC 0%, transparent 50%);
+    }
+
+    .round-content {
+      position: relative;
+      z-index: 10;
+      max-width: 48rem;
+      text-align: center;
+    width: 100%;
+    display: block;
+    clear: both; /* fuerza que lo que venga después quede debajo */
+}
+
+    .number {
+      font-size: 3.5rem;
+      font-weight: 900;
+      margin-bottom: 1rem;
+    }
+
+    .number.marvel {
+      color: #DC143C;
+      text-shadow: 0 0 30px rgba(220,20,60,0.8);
+    }
+
+    .number.dc {
+      color: #0052CC;
+      text-shadow: 0 0 30px rgba(0,82,204,0.8);
+    }
+
+    .round-title {
+      font-size: 2.5rem;
+      font-weight: 900;
+      color: #fff;
+      margin-bottom: 1rem;
+    }
+
+    .round-subtitle {
+      font-size: 1.5rem;
+      font-weight: 600;
+      opacity: 0.8;
+      margin-bottom: 2rem;
+    }
+
+    .subtitle.marvel {
+      color: #FF6B6B;
+    }
+
+    .subtitle.dc {
+      color: #66B3FF;
+    }
+
+    .winner-badge {
+      display: inline-block;
+      margin-bottom: 3rem;
+      padding: 0.75rem 1.5rem;
+      border-radius: 999px;
+      font-weight: bold;
+      text-transform: uppercase;
+      font-size: 0.9rem;
+      color: #fff;
+      letter-spacing: 0.1em;
+    }
+
+    .winner-badge.marvel {
+      background: linear-gradient(90deg, #DC143C 0%, #FF6B6B 100%);
+      box-shadow: 0 0 30px rgba(220,20,60,0.6);
+    }
+
+    .winner-badge.dc {
+      background: linear-gradient(90deg, #0052CC 0%, #66B3FF 100%);
+      box-shadow: 0 0 30px rgba(0,82,204,0.6);
+    }
+
+    .round-description {
+      font-size: 1.2rem;
+      color: #ccc;
+      line-height: 1.6;
+    }
+
+    .round-line {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+    }
+
+    .round-line.marvel {
+      background: linear-gradient(90deg, transparent 0%, #DC143C 50%, transparent 100%);
+      box-shadow: 0 0 20px #DC143C;
+    }
+
+    .round-line.dc {
+      background: linear-gradient(90deg, transparent 0%, #0052CC 50%, transparent 100%);
+      box-shadow: 0 0 20px #0052CC;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.2; }
+      50% { opacity: 0.5; }
+    }
+
+    /* Forzar header completamente rojo en estado final */
+    #header.final-header {
+      background: #DC143C !important;
+      background-image: none !important;
+      box-shadow: inset 0 0 40px rgba(220,20,60,0.6) !important;
+    }
+
+    /* Asegurar que la capa visible muestre rojo en estado final */
+    #header.final-header .header-bg .bg-layer {
+      background: #DC143C !important;
+      background-image: none !important;
+      opacity: 1 !important;
+      mix-blend-mode: normal !important;
+      transition: none !important;
+    }
+
+    /* Ajustes visuales: centrar Marvel y ocultar elementos que puedan tapar */
+    #header.final-header .side.left {
+      left: 50% !important;
+      transform: translateX(-50%) !important;
+    }
+
+    #header.final-header .side.right,
+    #header.final-header .vs {
+      opacity: 0 !important;
+      pointer-events: none !important;
+      transform: translateY(-8px) !important;
+    }
+
+    #header.final-header .title {
+      color: #fff !important;
+    }
+
+    #header.final-header .header-content {
+      background: transparent !important;
+    }
+
+    /* Mantener tamaño original de MARVEL / DC y VS separado */
+    .header-content .side .title {
+      font-size: 3rem;      /* tamaño original para MARVEL / DC */
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .header-content .vs .title {
+      font-size: 2.4rem;    /* VS más pequeño y separado */
+      font-weight: 900;
+      letter-spacing: 0.18em;
+    }
+    #centerEnergy {
+  position: absolute;
+  top: 50%;
+  width: 130px;
+  height: 130px;
+  left: 50%;              /* 🔥 arranca igual que la línea blanca */
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 35;
+  transition: left 1s cubic-bezier(0.4,0,0.2,1);
+
+
+background: radial-gradient(
+  circle,
+  rgba(170, 0, 255, 1) 0%,       /* núcleo brillante */
+  rgba(120, 0, 200, 0.9) 20%,
+  rgba(90, 0, 160, 0.75) 40%,
+  rgba(50, 0, 110, 0.5) 60%,
+  rgba(10, 0, 40, 0.25) 80%,
+  rgba(0, 0, 0, 0) 100%
+  );
+
+  filter: blur(6px);
+  opacity: 0.85;
+
+  /* 🔥 Transición suave cuando cambie left */
+  transition: left 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+
+  animation: energyPulse 2s ease-in-out infinite alternate;
+}
+#centerEnergy::after {
+  content: "";
+  position: absolute;
+  inset: -30px;
+  background: radial-gradient(
+    circle,
+      rgba(106, 13, 173, 1) 100%,
+    transparent 100%
+  );
+  clip-path: polygon(
+    50% 0%, 60% 20%, 100% 20%, 70% 40%,
+    80% 100%, 50% 70%, 20% 100%, 30% 40%,
+    0% 20%, 40% 20%
+  );
+  filter: blur(4px);
+}
+@keyframes energyPulse {
+  0% {
+    transform: translate(-50%, -50%) scale(0.9);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1.25);
+    opacity: 1;
+  }
+}
+.timeline-container {
+  width: 100%;
+  clear: both; /* asegura que se corte cualquier float */
+  margin-top: 40px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+
+.timeline-line {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 4px;
+  background-color: #ccc;
+  transform: translateX(-50%);
+  z-index: 0;
+}
+
+.timeline-items {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 60px;
+  z-index: 1;
+}
+
+.timeline-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+}
+
+.timeline-year {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #222;
+  color: white;
+  font-weight: bold;
+  padding: 6px 12px;
+  border-radius: 20px;
+  z-index: 2;
+}
+
+.timeline-side {
+  width: 45%;
+  display: grid;               /* usamos grid */
+  grid-template-columns: repeat(3, 1fr); /* 3 columnas iguales */
+  gap: 20px;                   /* espacio entre pósters */
+  text-align: center;
+}
+
+.timeline-side .movie img {
+  width: 100%;                 /* ocupa toda la celda */
+  height: auto;
+  border-radius: 8px;
+}
+
+.timeline-side .movie a {
+  display: block;
+  margin-top: 6px;
+  font-size: 1.2rem;           /* letra más grande */
+  font-weight: bold;
+}
+
+.timeline-side.marvel {
+  width: 45%;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 3 columnas */
+  gap: 20px;
+  justify-items: center; /* centra cada celda */
+  justify-content: end;  /* empuja todo el contenido hacia la derecha */
+}
+
+/* Un solo póster → columna 3 (derecha) */
+.timeline-side.marvel .movie:only-child {
+  grid-column: 3;
+}
+
+/* Dos pósters → columnas 2 y 3 (derecha) */
+.timeline-side.marvel .movie:nth-child(1):nth-last-child(2) {
+  grid-column: 2;
+}
+.timeline-side.marvel .movie:nth-child(2):nth-last-child(1) {
+  grid-column: 3;
+}
+
+
+
+.timeline-side.marvel a {
+  color: #e62429;
+}
+
+.timeline-side.dc a {
+  color: #0072ce;
+}
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header id="header">
+    <div class="header-bg"></div>
+    <div class="header-content">
+      <div class="side left"><span class="title">MARVEL</span></div>
+      <div class="vs"><span class="title">VS</span></div>
+      <div class="side right"><span class="title">DC</span></div>
+    </div>
+  </header>
+
+  <!-- BattleLine -->
+  <div id="battle-line">
+    <div class="bar-wrap">
+      <div id="barMarvel"></div>
+      <div id="barDc"></div>
+      <div id="centerLine"></div>
+      <div id="centerEnergy"></div>
+    </div>
+  </div>
+
+  <!-- Intro Section -->
+  <section class="intro">
+    <div class="intro-content">
+      <h1 class="intro-title">Marvel vs DC: Choque de gigantes</h1>
+      <p class="intro-text">
+        Bienvenidos a este increíble enfrentamiento donde los dos gigantes del entretenimiento
+        superheroico competirán por demostrar quién es el mejor.
+      </p>
+    </div>
+
+    <!-- etiquetas sobre la imagen: Marvel (izq), VS (centro), DC (der) -->
+    <div class="intro-labels" aria-hidden="true">
+      <span class="intro-label marvel">Marvel</span>
+      <span class="intro-label vs">VS</span>
+      <span class="intro-label dc">DC</span>
+    </div>
+  </section>
+
+  <!-- Rounds -->
+  <main>
+    <!-- Round 1 -->
+    <section class="round marvel" data-winner="marvel">
+      <div class="round-glow marvel"></div>
+      <div class="round-content">
+        <div class="round-number"><span class="number marvel">1</span></div>
+        <h2 class="round-title">Taquilla Mundial</h2>
+        <p class="round-subtitle"><span class="subtitle marvel">El Dominio del Cine</span></p>
+        <div class="winner-badge marvel">🔴 Marvel Domina</div>
+        <p class="round-description">
+          Marvel demuestra su supremacía en las salas de cine con estrenos que rompen récords...
+        </p>
+        <div class="flourish-embed flourish-chart" data-src="visualisation/26172819"><script src="https://public.flourish.studio/resources/embed.js"></script><noscript><img src="https://public.flourish.studio/visualisation/26172819/thumbnail" width="100%" alt="chart visualization" /></noscript></div>
+      </div>
+      <div class="round-line marvel"></div>
+    </section>
+
+    <!-- Round 2 -->
+    <section class="round dc" data-winner="dc">
+      <div class="round-glow dc"></div>
+      <div class="round-content">
+        <div class="round-number"><span class="number dc">2</span></div>
+        <h2 class="round-title">El veredicto del pueblo</h2>
+        <p class="round-subtitle"><span class="subtitle dc"> Entre aplausos y controversias</span></p>
+        <div class="winner-badge dc">🔵 DC Prevalece</div>
+        <p class="round-description">
+          En la batalla por los ratings de IMDb, DC se lleva la victoria gracias a producciones como The Dark Knight, que alcanzó puntuaciones históricas y se mantiene como una de las películas mejor valoradas de todos los tiempos. Mientras Marvel domina en cantidad de estrenos y consistencia, DC logra imponerse en este round con títulos que dejaron huella en la crítica y el público, consolidando su prestigio en la plataforma de reseñas más influyente del cine
+
+        </p>
+        <div class="flourish-embed flourish-bar-chart-race" data-src="visualisation/26479054"><script src="https://public.flourish.studio/resources/embed.js"></script><noscript><img src="https://public.flourish.studio/visualisation/26479054/thumbnail" width="100%" alt="bar-chart-race visualization" /></noscript></div>
+      </div>
+
+      <div class="round-line dc"></div>
+    </section>
+
+    <!-- Round 3 -->
+  <section class="round dc" data-winner="dc">
+      <div class="round-glow dc"></div>
+      <div class="round-content">
+        <div class="round-number"><span class="number dc">3</span></div>
+        <h2 class="round-title">Triunfos en la Alfombra Roja</h2>
+        <p class="round-subtitle"><span class="subtitle dc">Oscuridad que conquista jurados</span></p>
+        <div class="winner-badge dc">🔵 DC Prevalece</div>
+        <p class="round-description">
+         DC se impone en el terreno de los reconocimientos, con películas como The Dark Knight y Joker que conquistaron la crítica y acumularon galardones de la Academia y festivales internacionales. Su enfoque más oscuro y dramático logró resonar en jurados y audiencias, consolidando a DC como el vencedor en la arena de los premios.
+
+        </p>
+        <div class="flourish-embed flourish-pictogram" data-src="visualisation/26331007"><script src="https://public.flourish.studio/resources/embed.js"></script><noscript><img src="https://public.flourish.studio/visualisation/26331007/thumbnail" width="100%" alt="pictogram visualization" /></noscript></div>
+      </div>
+      <div class="round-line dc"></div>
+    </section>
+
+<!-- Round 4 -->
+<section id="cuatro" class="round marvel" data-winner="marvel">
+  <div class="round-glow marvel"></div>
+  <div class="round-content">
+    <div class="round-number"><span class="number marvel">4</span></div>
+    <h2 class="round-title">Año Tras Año en Pantalla</h2>
+    <p class="round-subtitle"><span class="subtitle marvel">Cada año, un nuevo evento global</span></p>
+    <div class="winner-badge marvel">🔴 Marvel Domina</div>
+
+    <p class="round-description">
+      Marvel domina al desplegar un universo cohesionado que año tras año presentó estrenos estratégicos, desde Iron Man en 2008 hasta Avengers: Endgame y más allá. Su constancia y planificación convirtieron cada estreno en un evento global, marcando la diferencia frente a DC y asegurando la victoria en la comparación de lanzamientos por año.
+
+    </p>
+  </div>
+
+  <!-- Timeline container -->
+  <div class="timeline-container">
+    <div class="timeline-line"></div>
+    <div id="timeline" class="timeline-items"></div>
+  </div>
+
+  <div class="round-line marvel"></div>
+</section>
+
+    <!-- Round 5 -->
+    <section class="round marvel" data-winner="marvel">
+      <div class="round-glow marvel"></div>
+      <div class="round-content">
+        <div class="round-number"><span class="number marvel">5</span></div>
+        <h2 class="round-title">Íconos que Trascienden la Pantalla</h2>
+        <p class="round-subtitle"><span class="subtitle marvel">De héroes de cómic a fenómenos culturales</span></p>
+        <div class="winner-badge marvel">🔴 Marvel Domina</div>
+        <p class="round-description">
+          DC cuenta con leyendas como Batman, Superman y Wonder Woman, figuras que definieron el concepto de superhéroe durante décadas. Pero Marvel se impone en este round al transformar personajes como Spider-Man, Iron Man y Black Panther en íconos culturales globales. Gracias a su universo interconectado y narrativas modernas, Marvel logró que cada héroe se convirtiera en parte de una saga épica que conquistó a millones de fans en todo el mundo. Por eso a continuacion podemos ver los personajes favoritos de cada pais, mostrando como los personajes de marvel son mas populares en la mayoria de los lugares.
+        </p>
+        <div class="flourish-embed flourish-map" data-src="visualisation/26477634"><script src="https://public.flourish.studio/resources/embed.js"></script><noscript><img src="https://public.flourish.studio/visualisation/26477634/thumbnail" width="100%" alt="map visualization" /></noscript></div>
+      </div>
+      <div class="round-line marvel"></div>
+    </section>
+
+    <!-- Round 6 -->
+   <section class="round marvel" data-winner="marvel">
+  <div class="round-glow marvel"></div>
+  <div class="round-content">
+  
+    <audio id="marvel-audio" autoplay muted>
+      <source src="assets/marvel_intro_music.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+      document.addEventListener("click", () => {
+        const audio = document.getElementById("marvel-audio");
+        audio.muted = false;
+        audio.play();
+      }, { once: true });
+    </script>
+
+    <div class="round-number"><span class="number marvel">6</span></div>
+    <h2 class="round-title">El ganador es Marvel</h2>
+    <p class="round-subtitle"><span class="subtitle marvel">La saga continúa con un golpe maestro</span></p>
+    <div class="winner-badge marvel">🔴 Marvel Domina</div>
+    <p class="round-description">
+      Marvel se lleva la victoria gracias a su universo cohesivo, su consistencia narrativa y su enorme impacto cultural, consolidándose como el referente absoluto del entretenimiento superheroico mientras ambas franquicias dejan una marca imborrable en los fans.
+    </p>
+
+    <div style="display: flex; justify-content: center; margin-top: 2rem;">
+      <img 
+        src="assets/R.jpeg" 
+        alt="Marvel Collage"
+        style="max-width: 600px; width: 100%; border-radius: 12px;">
+    </div>
+
+  </div>
+  <div class="round-line marvel"></div>
+</section>
+
+  </main>
+
+  <!-- Script -->
+  <script>
+const timelineData = [
+  {
+    year: 2008,
+    marvel: [
+      { title: "Iron Man", poster: "assets/1.JPG", link: "https://www.youtube.com/watch?v=8hYlB38asDY" }
+    ],
+    dc: [
+      { title: "The Dark Knight", poster: "assets/2.JPG", link: "https://www.youtube.com/watch?v=EXeTwQWrcwY" }
+    ]
+  },
+  {
+    year: 2009,
+    marvel: [
+      { title: "Iron Man 2", poster: "assets/3.JPG", link: "https://www.youtube.com/watch?v=BoohRoVA9WQ" }
+    ],
+    dc: [
+      { title: "Watchmen", poster: "assets/4.JPG", link: "https://www.youtube.com/watch?v=PVjA0y78_EQ" }
+    ]
+  },
+  {
+    year: 2010,
+    marvel: [
+      { title: "Thor", poster: "assets/5.JPG", link: "https://www.youtube.com/watch?v=JOddp-nlNvQ" },
+      { title: "Captain America: First Avenger", poster: "assets/6.WEBP", link: "https://www.youtube.com/watch?v=JerVrbLldXw" }
+    ],
+    dc: [
+      { title: "Jonah Hex", poster: "assets/7.JPG", link: "https://www.youtube.com/watch?v=znxw5YfR5JQ" }
+    ]
+  },
+  {
+    year: 2011,
+    marvel: [
+      { title: "The Avengers", poster: "assets/8.JPG", link: "https://www.youtube.com/watch?v=eOrNdBpGMv8" }
+    ],
+    dc: [
+      { title: "Green Lantern", poster: "assets/9.JPG", link: "https://www.youtube.com/watch?v=8NWGl_A3b60" }
+    ]
+  },
+  {
+    year: 2012,
+    marvel: [
+      { title: "Iron Man 3", poster: "assets/10.JPG", link: "https://www.youtube.com/watch?v=Ke1Y3P9D0Bc" }
+    ],
+    dc: [
+      { title: "The Dark Knight Rises", poster: "assets/11.JPG", link: "https://www.youtube.com/watch?v=5ysJwpnWr2w" }
+    ]
+  },
+  {
+    year: 2013,
+    marvel: [
+      { title: "Thor: The Dark World", poster: "assets/12.WEBP", link: "https://www.youtube.com/watch?v=jHFhZLJajlc" },
+      { title: "Captain America: Winter Soldier", poster: "assets/13.JPG", link: "https://www.youtube.com/watch?v=tbayiPxkUMM" }
+    ],
+    dc: [
+      { title: "Man of Steel", poster: "assets/14.JPEG", link: "https://www.youtube.com/watch?v=agznNeYshRA" }
+    ]
+  },
+  {
+    year: 2014,
+    marvel: [
+      { title: "Guardians of the Galaxy", poster: "assets/15.WEBP", link: "https://www.youtube.com/watch?v=2XltzyLcu0g" },
+    ],
+    dc: [] // ✅ DC no tuvo estreno
+  },
+  {
+    year: 2015,
+    marvel: [
+      { title: "Ant-Man", poster: "assets/17.JPG", link: "https://www.youtube.com/watch?v=QfOZWGLT1JM" },
+      { title: "Avengers: Age of Ultron", poster: "assets/16.JPEG", link: "https://www.youtube.com/watch?v=tmeOjFno6Do" }
+    ],
+    dc: [
+      { title: "Wonder Woman", poster: "assets/19.JPG", link: "https://www.youtube.com/watch?v=1Q8fG0TtVAY" }
+    ]
+  },
+  {
+    year: 2016,
+    marvel: [
+      { title: "Doctor Strange", poster: "assets/20.JPG", link: "https://www.youtube.com/watch?v=h7gvFravm4A" },
+      { title: "Captain America: Civil War", poster: "assets/21.JPG", link: "https://www.youtube.com/watch?v=FkTybqcX-Yo" }
+    ],
+    dc: [
+      { title: "Suicide Squad", poster: "assets/22.JPEG", link: "https://www.youtube.com/watch?v=mMb-RrhTxIE" },
+      { title: "Batman v Superman", poster: "assets/23.JPG", link: "https://www.youtube.com/watch?v=bha24P9uw-E" }
+    ]
+  },
+  {
+    year: 2017,
+    marvel: [
+      { title: "Spider-Man: Homecoming", poster: "assets/24.JPG", link: "https://www.youtube.com/watch?v=rk-dF1lIbIg" },
+      { title: "Thor: Ragnarok", poster: "assets/25.WEBP", link: "https://www.youtube.com/watch?v=ue80QwXMRHg" },
+      { title: "Guardians Vol.2", poster: "assets/26.JPG", link: "https://www.youtube.com/watch?v=2cv2ueYnKjg" }
+    ],
+    dc: [
+      { title: "Justice League", poster: "assets/27.WEBP", link: "https://www.youtube.com/watch?v=3cxixDgHUYw" }
+    ]
+  },
+  {
+    year: 2018,
+    marvel: [
+      { title: "Black Panther", poster: "assets/28.WEBP", link: "https://www.youtube.com/watch?v=CYpP-JMqGtM" },
+      { title: "Infinity War", poster: "assets/30.JPG", link: "https://www.youtube.com/watch?v=6ZfuNTqbHE8" },
+      { title: "Ant-Man & Wasp", poster: "assets/31.JPG", link: "https://www.youtube.com/watch?v=fmrdsRdYZlg" }
+    ],
+    dc: [
+      { title: "Aquaman", poster: "assets/32.WEBP", link: "https://www.youtube.com/watch?v=6mQDS7Q7pys" }
+    ]
+  },
+  {
+    year: 2019,
+    marvel: [
+      { title: "Captain Marvel", poster: "assets/33.JPG", link: "https://www.youtube.com/watch?v=Z1BCujX3pw8" },
+      { title: "Endgame", poster: "assets/34.WEBP", link: "https://www.youtube.com/watch?v=TcMBFSGVi1c" },
+      { title: "Far From Home", poster: "assets/35.WEBP", link: "https://www.youtube.com/watch?v=Nt9L1jCKGnE" }
+    ],
+    dc: [
+      { title: "Joker", poster: "assets/36.WEBP", link: "https://www.youtube.com/watch?v=7aAl-R23tlA" }
+    ]
+  },
+  {
+    year: 2020,
+    marvel: [
+      { title: "Black Widow", poster: "assets/37.JPG", link: "https://www.youtube.com/watch?v=ybji16u608U" }
+    ],
+    dc: [
+      { title: "Birds of Prey", poster: "assets/38.JPG", link: "https://www.youtube.com/watch?v=kGM4uYZzfu0" }
+    ]
+  },
+  {
+    year: 2021,
+    marvel: [
+      { title: "Shang-Chi", poster: "assets/39.JPG", link: "https://www.youtube.com/watch?v=8YjFbMbfXaQ" },
+      { title: "Eternals", poster: "assets/40.JPG", link: "https://www.youtube.com/watch?v=x_me3xsvDgk" }
+    ],
+    dc: [
+      { title: "The Suicide Squad", poster: "assets/41.WEBP", link: "https://www.youtube.com/watch?v=jz1FrtMIh5c" }
+    ]
+  },
+  {
+  year: 2022,
+  marvel: [
+    { title: "Doctor Strange 2", poster: "assets/42.JPG", link: "https://www.youtube.com/watch?v=aWzlQ2N6qqg" },
+    { title: "Thor: Love and Thunder", poster: "assets/43.WEBP", link: "https://www.youtube.com/watch?v=Go8nTmfrQd8" }
+  ],
+  dc: [
+    { title: "The Batman", poster: "assets/44.WEBP", link: "https://www.youtube.com/watch?v=mqqft2x_Aa4" }
+  ]
+},
+{
+  year: 2023,
+  marvel: [
+    { title: "Guardians Vol.3", poster: "assets/45.JPEG", link: "https://www.youtube.com/watch?v=JqcncLPi9zw" },
+    { title: "The Marvels", poster: "assets/46.JPG", link: "https://www.youtube.com/watch?v=wS_qbDztgVY" }
+  ],
+  dc: [
+    { title: "Blue Beetle", poster: "assets/47.WEBP", link: "https://www.youtube.com/watch?v=vS3_72Gb-bI" }
+  ]
+}
+]
+const timeline = document.getElementById("timeline");
+
+timelineData.forEach(item => {
+  const marvelHTML = item.marvel.map(movie => `
+    <div class="movie">
+      <img src="${movie.poster}" alt="${movie.title}">
+      <a href="${movie.link}" target="_blank">${movie.title}</a>
+    </div>
+  `).join("");
+
+  const dcHTML = item.dc.map(movie => `
+    <div class="movie">
+      <img src="${movie.poster}" alt="${movie.title}">
+      <a href="${movie.link}" target="_blank">${movie.title}</a>
+    </div>
+  `).join("");
+
+  const block = `
+    <div class="timeline-item">
+      <div class="timeline-side marvel">${marvelHTML}</div>
+      <div class="timeline-year">${item.year}</div>
+      <div class="timeline-side dc">${dcHTML}</div>
+    </div>
+  `;
+
+  timeline.innerHTML += block;
+});
+
+
+document.addEventListener('DOMContentLoaded', () => {
+  // ---- Contadores y referencias ----
+  let totalMarvel = 0;
+  let totalDc = 0;
+
+  const header = document.getElementById('header');
+  const headerBG = document.querySelector('.header-bg');
+  const intro = document.querySelector('.intro');
+  const battleLine = document.getElementById('battle-line'); // se usa para posicionamiento durante la intro (aunque está oculta)
+  const rounds = Array.from(document.querySelectorAll('section.round'));
+
+  // seguridad: si falta header o headerBG, salimos (no hace nada visible)
+  if (!header || !headerBG) return;
+
+  // ---- Helper: clamp ----
+  const clamp = (v, a = 0, b = 100) => Math.max(a, Math.min(b, v));
+
+  // ---- Actualiza gradiente del header según porcentaje Marvel (0-100) ----
+  function updateHeaderBackground(marvelPct) {
+    const headerBG = document.querySelector('.header-bg');
+    if (!headerBG) return;
+
+    // margen visual alrededor del centro violeta
+    const spread = 8;
+    const center = marvelPct;
+    const leftCut = Math.max(0, center - spread);
+    const rightCut = Math.min(100, center + spread);
+
+    const gradient = `linear-gradient(90deg,
+        #DC143C 0%,
+        #DC143C ${leftCut}%,
+        #800080 ${center}%,
+        #0052CC ${rightCut}%,
+        #0052CC 100%
+      )`;
+
+    // Crossfade: crear una nueva capa con el gradiente y hacer fade-in
+    const layer = document.createElement('div');
+    layer.className = 'bg-layer';
+    layer.style.background = gradient;
+    layer.style.opacity = '0';
+    headerBG.appendChild(layer);
+
+    // Forzar reflow y arrancar transición
+    requestAnimationFrame(() => {
+      layer.style.opacity = '1';
+      // quitar capas viejas después de la transición
+      setTimeout(() => {
+        const children = Array.from(headerBG.querySelectorAll('.bg-layer'));
+        // mantener solo la última
+        children.forEach((c, idx) => {
+          if (c !== layer) c.remove();
+        });
+      }, 950);
+    });
+}
+
+  // ---- updateBattleLine: ya no depende del DOM de la barra ----
+let marvelPct = 50;
+let dcPct = 50;
+
+function updateBattleLine(winner) {
+
+  // tamaño del paso por round: reducir para que cada round haga
+  // un incremento sutil (no dominar por completo en round 1)
+  const delta = 18;  // antes 25, ahora más suave
+
+  if (winner === "marvel") {
+    marvelPct = Math.min(marvelPct + delta, 100);
+    dcPct = 100 - marvelPct;
+  } else {
+    dcPct = Math.min(dcPct + delta, 100);
+    marvelPct = 100 - dcPct;
+  }
+
+  // 🔥 Actualiza el header dinámico
+  updateHeaderBackground(marvelPct);
+}
+  // ---- IntersectionObserver para rounds (cada round cuenta 1 vez) ----
+  // Detecta además el round final y aplica/quita el estado final del header
+  const lastRound = rounds[rounds.length - 1];
+
+  // Guardar/restaurar estado del header cuando entra/sale el round final
+  const leftTitleEl = header.querySelector('.side.left .title');
+  const vsEl = header.querySelector('.vs .title');
+  const rightTitleEl = header.querySelector('.side.right .title');
+
+  function enterFinal(winner) {
+    if (!leftTitleEl) return;
+    // solo aplicar si el ganador es Marvel (según pedido)
+    if (winner && winner.toLowerCase() === 'marvel') {
+      // guardar originales si no están guardados
+      if (!header.dataset.origLeft) {
+        header.dataset.origLeft = leftTitleEl.textContent || '';
+        header.dataset.origVs = (vsEl && vsEl.textContent) || '';
+        header.dataset.origRight = (rightTitleEl && rightTitleEl.textContent) || '';
+      }
+
+      leftTitleEl.textContent = 'MARVEL';
+      header.classList.add('final-header');
+    }
+  }
+
+  function exitFinal() {
+    if (!leftTitleEl) return;
+    if (header.dataset.origLeft) {
+      leftTitleEl.textContent = header.dataset.origLeft;
+      if (vsEl) vsEl.textContent = header.dataset.origVs;
+      if (rightTitleEl) rightTitleEl.textContent = header.dataset.origRight;
+      delete header.dataset.origLeft;
+      delete header.dataset.origVs;
+      delete header.dataset.origRight;
+    }
+    header.classList.remove('final-header');
+  }
+
+  // Exponer helpers globales para testing/manual
+  window.enterFinalRound = enterFinal;
+  window.exitFinalRound = exitFinal;
+
+  rounds.forEach(section => {
+    const io = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        const isIntersecting = entry.isIntersecting;
+        const target = entry.target;
+        const winner = target.dataset.winner || null;
+
+        // si es el round final, manejamos estado final cuando entra/sale
+        if (target === lastRound) {
+          if (isIntersecting) {
+            enterFinal(winner);
+          } else {
+            exitFinal();
+          }
+        }
+
+        // solo contar la primera vez y actualizar battle line cuando aparece
+        if (!isIntersecting) return;
+        if (!target.dataset.counted) {
+          target.dataset.counted = 'true';
+          if (winner) updateBattleLine(winner);
+        }
+      });
+    }, { threshold: 0.35 });
+    io.observe(section);
+  });
+
+  // ---- Reset a 50/50 cuando volvés al inicio (opcional) ----
+  // Esto también remueve la marca 'counted' para permitir replay al volver al top.
+  function resetIfAtTop() {
+    if (window.scrollY <= 5) {
+      totalMarvel = 0;
+      totalDc = 0;
+      // quitar flags para volver a contar los rounds si querés replay
+      rounds.forEach(r => r.removeAttribute('data-counted'));
+      updateHeaderBackground(50);
+    }
+  }
+  window.addEventListener('scroll', resetIfAtTop, { passive: true });
+  // Llamada inicial
+  resetIfAtTop();
+
+  // ---- MOVER HEADER desde abajo hacia arriba durante la intro ----
+  // (mantiene la lógica que tenías: header empieza abajo y sube con scroll)
+  function updateHeaderPosition() {
+    if (!intro || !header || !battleLine) return;
+
+    const headerH = header.getBoundingClientRect().height || parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--header-h')) || 80;
+    const introHeight = intro.getBoundingClientRect().height || window.innerHeight;
+    const animDistance = Math.max(introHeight - headerH * 1.5, 1);
+
+    const scrolled = Math.max(0, Math.min(window.scrollY, animDistance));
+    const progress = scrolled / animDistance;
+
+    // easing suave (pow) para que suba con feeling natural
+    const eased = Math.pow(progress, 1.12);
+
+    const viewportH = window.innerHeight;
+    const startTop = Math.round(viewportH - headerH); // abajo
+    const endTop = 0; // arriba
+    const currentTop = Math.round(startTop + (endTop - startTop) * eased);
+
+    header.style.top = currentTop + 'px';
+
+    // mantener battleLine justo debajo (aunque está invisible)
+    const battleTop = currentTop + headerH;
+    battleLine.style.top = battleTop + 'px';
+  }
+
+  function initHeaderInIntro() {
+    const headerH = header.getBoundingClientRect().height || parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--header-h')) || 80;
+    header.style.top = (window.innerHeight - headerH) + 'px';
+    battleLine.style.top = (window.innerHeight) + 'px';
+    updateHeaderPosition();
+  }
+
+  window.addEventListener('scroll', () => {
+    // si finalLocked se usa en tu código, podés conservar esa lógica; aquí asumimos no lock por simplicidad
+    updateHeaderPosition();
+  }, { passive: true });
+
+  window.addEventListener('resize', updateHeaderPosition);
+  initHeaderInIntro();
+
+  // ---- Asegurar estado inicial del header (50/50) ----
+  updateHeaderBackground(50);
+
+  // ---- Opcional: exportar método global para testing/debugging ----
+  window.__debugBattle = {
+    updateBattleLine,
+    updateHeaderBackground,
+    reset: () => { totalMarvel = 0; totalDc = 0; rounds.forEach(r => r.removeAttribute('data-counted')); updateHeaderBackground(50); }
+  };
+})
+;
+
+</script>
+</body>
+</html>
