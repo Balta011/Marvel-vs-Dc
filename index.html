@@ -811,159 +811,159 @@ background: radial-gradient(
   <script>
 const timelineData = [
   {
-    year: 2008,
-    marvel: [
-      { title: "Iron Man", poster: "assets/1.JPG", link: "https://www.youtube.com/watch?v=8hYlB38asDY" }
-    ],
-    dc: [
-      { title: "The Dark Knight", poster: "assets/2.JPG", link: "https://www.youtube.com/watch?v=EXeTwQWrcwY" }
-    ]
-  },
-  {
-    year: 2009,
-    marvel: [
-      { title: "Iron Man 2", poster: "assets/3.JPG", link: "https://www.youtube.com/watch?v=BoohRoVA9WQ" }
-    ],
-    dc: [
-      { title: "Watchmen", poster: "assets/4.JPG", link: "https://www.youtube.com/watch?v=PVjA0y78_EQ" }
-    ]
-  },
-  {
-    year: 2010,
-    marvel: [
-      { title: "Thor", poster: "assets/5.JPG", link: "https://www.youtube.com/watch?v=JOddp-nlNvQ" },
-      { title: "Captain America: First Avenger", poster: "assets/6.WEBP", link: "https://www.youtube.com/watch?v=JerVrbLldXw" }
-    ],
-    dc: [
-      { title: "Jonah Hex", poster: "assets/7.JPG", link: "https://www.youtube.com/watch?v=znxw5YfR5JQ" }
-    ]
-  },
-  {
-    year: 2011,
-    marvel: [
-      { title: "The Avengers", poster: "assets/8.JPG", link: "https://www.youtube.com/watch?v=eOrNdBpGMv8" }
-    ],
-    dc: [
-      { title: "Green Lantern", poster: "assets/9.JPG", link: "https://www.youtube.com/watch?v=8NWGl_A3b60" }
-    ]
-  },
-  {
-    year: 2012,
-    marvel: [
-      { title: "Iron Man 3", poster: "assets/10.JPG", link: "https://www.youtube.com/watch?v=Ke1Y3P9D0Bc" }
-    ],
-    dc: [
-      { title: "The Dark Knight Rises", poster: "assets/11.JPG", link: "https://www.youtube.com/watch?v=5ysJwpnWr2w" }
-    ]
-  },
-  {
-    year: 2013,
-    marvel: [
-      { title: "Thor: The Dark World", poster: "assets/12.WEBP", link: "https://www.youtube.com/watch?v=jHFhZLJajlc" },
-      { title: "Captain America: Winter Soldier", poster: "assets/13.JPG", link: "https://www.youtube.com/watch?v=tbayiPxkUMM" }
-    ],
-    dc: [
-      { title: "Man of Steel", poster: "assets/14.JPEG", link: "https://www.youtube.com/watch?v=agznNeYshRA" }
-    ]
-  },
-  {
-    year: 2014,
-    marvel: [
-      { title: "Guardians of the Galaxy", poster: "assets/15.WEBP", link: "https://www.youtube.com/watch?v=2XltzyLcu0g" },
-    ],
-    dc: [] // ✅ DC no tuvo estreno
-  },
-  {
-    year: 2015,
-    marvel: [
-      { title: "Ant-Man", poster: "assets/17.JPG", link: "https://www.youtube.com/watch?v=QfOZWGLT1JM" },
-      { title: "Avengers: Age of Ultron", poster: "assets/16.JPEG", link: "https://www.youtube.com/watch?v=tmeOjFno6Do" }
-    ],
-    dc: [
-      { title: "Wonder Woman", poster: "assets/19.JPG", link: "https://www.youtube.com/watch?v=1Q8fG0TtVAY" }
-    ]
-  },
-  {
-    year: 2016,
-    marvel: [
-      { title: "Doctor Strange", poster: "assets/20.JPG", link: "https://www.youtube.com/watch?v=h7gvFravm4A" },
-      { title: "Captain America: Civil War", poster: "assets/21.JPG", link: "https://www.youtube.com/watch?v=FkTybqcX-Yo" }
-    ],
-    dc: [
-      { title: "Suicide Squad", poster: "assets/22.JPEG", link: "https://www.youtube.com/watch?v=mMb-RrhTxIE" },
-      { title: "Batman v Superman", poster: "assets/23.JPG", link: "https://www.youtube.com/watch?v=bha24P9uw-E" }
-    ]
-  },
-  {
-    year: 2017,
-    marvel: [
-      { title: "Spider-Man: Homecoming", poster: "assets/24.JPG", link: "https://www.youtube.com/watch?v=rk-dF1lIbIg" },
-      { title: "Thor: Ragnarok", poster: "assets/25.WEBP", link: "https://www.youtube.com/watch?v=ue80QwXMRHg" },
-      { title: "Guardians Vol.2", poster: "assets/26.JPG", link: "https://www.youtube.com/watch?v=2cv2ueYnKjg" }
-    ],
-    dc: [
-      { title: "Justice League", poster: "assets/27.WEBP", link: "https://www.youtube.com/watch?v=3cxixDgHUYw" }
-    ]
-  },
-  {
-    year: 2018,
-    marvel: [
-      { title: "Black Panther", poster: "assets/28.WEBP", link: "https://www.youtube.com/watch?v=CYpP-JMqGtM" },
-      { title: "Infinity War", poster: "assets/30.JPG", link: "https://www.youtube.com/watch?v=6ZfuNTqbHE8" },
-      { title: "Ant-Man & Wasp", poster: "assets/31.JPG", link: "https://www.youtube.com/watch?v=fmrdsRdYZlg" }
-    ],
-    dc: [
-      { title: "Aquaman", poster: "assets/32.WEBP", link: "https://www.youtube.com/watch?v=6mQDS7Q7pys" }
-    ]
-  },
-  {
-    year: 2019,
-    marvel: [
-      { title: "Captain Marvel", poster: "assets/33.JPG", link: "https://www.youtube.com/watch?v=Z1BCujX3pw8" },
-      { title: "Endgame", poster: "assets/34.WEBP", link: "https://www.youtube.com/watch?v=TcMBFSGVi1c" },
-      { title: "Far From Home", poster: "assets/35.WEBP", link: "https://www.youtube.com/watch?v=Nt9L1jCKGnE" }
-    ],
-    dc: [
-      { title: "Joker", poster: "assets/36.WEBP", link: "https://www.youtube.com/watch?v=7aAl-R23tlA" }
-    ]
-  },
-  {
-    year: 2020,
-    marvel: [
-      { title: "Black Widow", poster: "assets/37.JPG", link: "https://www.youtube.com/watch?v=ybji16u608U" }
-    ],
-    dc: [
-      { title: "Birds of Prey", poster: "assets/38.JPG", link: "https://www.youtube.com/watch?v=kGM4uYZzfu0" }
-    ]
-  },
-  {
-    year: 2021,
-    marvel: [
-      { title: "Shang-Chi", poster: "assets/39.JPG", link: "https://www.youtube.com/watch?v=8YjFbMbfXaQ" },
-      { title: "Eternals", poster: "assets/40.JPG", link: "https://www.youtube.com/watch?v=x_me3xsvDgk" }
-    ],
-    dc: [
-      { title: "The Suicide Squad", poster: "assets/41.WEBP", link: "https://www.youtube.com/watch?v=jz1FrtMIh5c" }
-    ]
-  },
-  {
-  year: 2022,
+  year: 2008,
   marvel: [
-    { title: "Doctor Strange 2", poster: "assets/42.JPG", link: "https://www.youtube.com/watch?v=aWzlQ2N6qqg" },
-    { title: "Thor: Love and Thunder", poster: "assets/43.WEBP", link: "https://www.youtube.com/watch?v=Go8nTmfrQd8" }
+    { title: "Iron Man", poster: "assets/1.jpg", link: "https://www.youtube.com/watch?v=8hYlB38asDY" }
   ],
   dc: [
-    { title: "The Batman", poster: "assets/44.WEBP", link: "https://www.youtube.com/watch?v=mqqft2x_Aa4" }
+    { title: "The Dark Knight", poster: "assets/2.jpg", link: "https://www.youtube.com/watch?v=EXeTwQWrcwY" }
+  ]
+},
+{
+  year: 2009,
+  marvel: [
+    { title: "Iron Man 2", poster: "assets/3.jpg", link: "https://www.youtube.com/watch?v=BoohRoVA9WQ" }
+  ],
+  dc: [
+    { title: "Watchmen", poster: "assets/4.jpg", link: "https://www.youtube.com/watch?v=PVjA0y78_EQ" }
+  ]
+},
+{
+  year: 2010,
+  marvel: [
+    { title: "Thor", poster: "assets/5.jpg", link: "https://www.youtube.com/watch?v=JOddp-nlNvQ" },
+    { title: "Captain America: First Avenger", poster: "assets/6.webp", link: "https://www.youtube.com/watch?v=JerVrbLldXw" }
+  ],
+  dc: [
+    { title: "Jonah Hex", poster: "assets/7.jpg", link: "https://www.youtube.com/watch?v=znxw5YfR5JQ" }
+  ]
+},
+{
+  year: 2011,
+  marvel: [
+    { title: "The Avengers", poster: "assets/8.jpg", link: "https://www.youtube.com/watch?v=eOrNdBpGMv8" }
+  ],
+  dc: [
+    { title: "Green Lantern", poster: "assets/9.jpg", link: "https://www.youtube.com/watch?v=8NWGl_A3b60" }
+  ]
+},
+{
+  year: 2012,
+  marvel: [
+    { title: "Iron Man 3", poster: "assets/10.jpg", link: "https://www.youtube.com/watch?v=Ke1Y3P9D0Bc" }
+  ],
+  dc: [
+    { title: "The Dark Knight Rises", poster: "assets/11.jpg", link: "https://www.youtube.com/watch?v=5ysJwpnWr2w" }
+  ]
+},
+{
+  year: 2013,
+  marvel: [
+    { title: "Thor: The Dark World", poster: "assets/12.webp", link: "https://www.youtube.com/watch?v=jHFhZLJajlc" },
+    { title: "Captain America: Winter Soldier", poster: "assets/13.jpg", link: "https://www.youtube.com/watch?v=tbayiPxkUMM" }
+  ],
+  dc: [
+    { title: "Man of Steel", poster: "assets/14.jpeg", link: "https://www.youtube.com/watch?v=agznNeYshRA" }
+  ]
+},
+{
+  year: 2014,
+  marvel: [
+    { title: "Guardians of the Galaxy", poster: "assets/15.webp", link: "https://www.youtube.com/watch?v=2XltzyLcu0g" }
+  ],
+  dc: []
+},
+{
+  year: 2015,
+  marvel: [
+    { title: "Ant-Man", poster: "assets/17.jpg", link: "https://www.youtube.com/watch?v=QfOZWGLT1JM" },
+    { title: "Avengers: Age of Ultron", poster: "assets/16.jpeg", link: "https://www.youtube.com/watch?v=tmeOjFno6Do" }
+  ],
+  dc: [
+    { title: "Wonder Woman", poster: "assets/19.jpg", link: "https://www.youtube.com/watch?v=1Q8fG0TtVAY" }
+  ]
+},
+{
+  year: 2016,
+  marvel: [
+    { title: "Doctor Strange", poster: "assets/20.jpg", link: "https://www.youtube.com/watch?v=h7gvFravm4A" },
+    { title: "Captain America: Civil War", poster: "assets/21.jpg", link: "https://www.youtube.com/watch?v=FkTybqcX-Yo" }
+  ],
+  dc: [
+    { title: "Suicide Squad", poster: "assets/22.jpeg", link: "https://www.youtube.com/watch?v=mMb-RrhTxIE" },
+    { title: "Batman v Superman", poster: "assets/23.jpg", link: "https://www.youtube.com/watch?v=bha24P9uw-E" }
+  ]
+},
+{
+  year: 2017,
+  marvel: [
+    { title: "Spider-Man: Homecoming", poster: "assets/24.jpg", link: "https://www.youtube.com/watch?v=rk-dF1lIbIg" },
+    { title: "Thor: Ragnarok", poster: "assets/25.webp", link: "https://www.youtube.com/watch?v=ue80QwXMRHg" },
+    { title: "Guardians Vol.2", poster: "assets/26.jpg", link: "https://www.youtube.com/watch?v=2cv2ueYnKjg" }
+  ],
+  dc: [
+    { title: "Justice League", poster: "assets/27.webp", link: "https://www.youtube.com/watch?v=3cxixDgHUYw" }
+  ]
+},
+{
+  year: 2018,
+  marvel: [
+    { title: "Black Panther", poster: "assets/28.webp", link: "https://www.youtube.com/watch?v=CYpP-JMqGtM" },
+    { title: "Infinity War", poster: "assets/30.jpg", link: "https://www.youtube.com/watch?v=6ZfuNTqbHE8" },
+    { title: "Ant-Man & Wasp", poster: "assets/31.jpg", link: "https://www.youtube.com/watch?v=fmrdsRdYZlg" }
+  ],
+  dc: [
+    { title: "Aquaman", poster: "assets/32.webp", link: "https://www.youtube.com/watch?v=6mQDS7Q7pys" }
+  ]
+},
+{
+  year: 2019,
+  marvel: [
+    { title: "Captain Marvel", poster: "assets/33.jpg", link: "https://www.youtube.com/watch?v=Z1BCujX3pw8" },
+    { title: "Endgame", poster: "assets/34.webp", link: "https://www.youtube.com/watch?v=TcMBFSGVi1c" },
+    { title: "Far From Home", poster: "assets/35.webp", link: "https://www.youtube.com/watch?v=Nt9L1jCKGnE" }
+  ],
+  dc: [
+    { title: "Joker", poster: "assets/36.webp", link: "https://www.youtube.com/watch?v=7aAl-R23tlA" }
+  ]
+},
+{
+  year: 2020,
+  marvel: [
+    { title: "Black Widow", poster: "assets/37.jpg", link: "https://www.youtube.com/watch?v=ybji16u608U" }
+  ],
+  dc: [
+    { title: "Birds of Prey", poster: "assets/38.jpg", link: "https://www.youtube.com/watch?v=kGM4uYZzfu0" }
+  ]
+},
+{
+  year: 2021,
+  marvel: [
+    { title: "Shang-Chi", poster: "assets/39.jpg", link: "https://www.youtube.com/watch?v=8YjFbMbfXaQ" },
+    { title: "Eternals", poster: "assets/40.jpg", link: "https://www.youtube.com/watch?v=x_me3xsvDgk" }
+  ],
+  dc: [
+    { title: "The Suicide Squad", poster: "assets/41.webp", link: "https://www.youtube.com/watch?v=jz1FrtMIh5c" }
+  ]
+},
+{
+  year: 2022,
+  marvel: [
+    { title: "Doctor Strange 2", poster: "assets/42.jpg", link: "https://www.youtube.com/watch?v=aWzlQ2N6qqg" },
+    { title: "Thor: Love and Thunder", poster: "assets/43.webp", link: "https://www.youtube.com/watch?v=Go8nTmfrQd8" }
+  ],
+  dc: [
+    { title: "The Batman", poster: "assets/44.webp", link: "https://www.youtube.com/watch?v=mqqft2x_Aa4" }
   ]
 },
 {
   year: 2023,
   marvel: [
-    { title: "Guardians Vol.3", poster: "assets/45.JPEG", link: "https://www.youtube.com/watch?v=JqcncLPi9zw" },
-    { title: "The Marvels", poster: "assets/46.JPG", link: "https://www.youtube.com/watch?v=wS_qbDztgVY" }
+    { title: "Guardians Vol.3", poster: "assets/45.jpeg", link: "https://www.youtube.com/watch?v=JqcncLPi9zw" },
+    { title: "The Marvels", poster: "assets/46.jpg", link: "https://www.youtube.com/watch?v=wS_qbDztgVY" }
   ],
   dc: [
-    { title: "Blue Beetle", poster: "assets/47.WEBP", link: "https://www.youtube.com/watch?v=vS3_72Gb-bI" }
+    { title: "Blue Beetle", poster: "assets/47.webp", link: "https://www.youtube.com/watch?v=vS3_72Gb-bI" }
   ]
 }
 ]
